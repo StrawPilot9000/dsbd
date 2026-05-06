@@ -1,0 +1,45 @@
+
+import pandas as pd
+import numpy as np
+
+
+df = pd.read_csv("iris.csv")
+print("✅ Successfully loaded 'iris.csv'!\n")
+
+# Automatically detect the text (categorical) and numeric columns
+cat_col = df.select_dtypes(include=['object', 'category']).columns[0]
+num_col = df.select_dtypes(include=[np.number]).columns[0]
+
+# ---------------------------------------------------------
+# 1. Summary statistics grouped by a qualitative variable
+# ---------------------------------------------------------
+print(f"--- 1. Summary Statistics of '{num_col}' grouped by '{cat_col}' ---")
+# The agg() function lets us apply multiple specific math operations at once
+summary_stats = df.groupby(cat_col)[num_col].agg(['mean', 'median', 'min', 'max', 'std'])
+print(summary_stats)
+print("\n")
+
+# ---------------------------------------------------------
+# 2. Create a list mapping numeric values to the categorical variable
+# ---------------------------------------------------------
+print("--- 2. Numeric List for Categorical Variable ---")
+# pd.factorize() automatically assigns an integer (0, 1, 2) to each unique text value
+numeric_array, unique_categories = pd.factorize(df[cat_col])
+
+# Convert the array to a standard Python list as requested
+numeric_list = numeric_array.tolist()
+
+print(f"Categories found mapping to 0, 1, 2... : {list(unique_categories)}")
+print(f"List of numeric values (showing first 20): {numeric_list[:20]}")
+print(f"Total items in list: {len(numeric_list)}\n")
+
+# ---------------------------------------------------------
+# 3. Basic statistical details of the species
+# ---------------------------------------------------------
+print("--- 3. Basic Statistical Details by Species ---")
+# The describe() function automatically calculates percentiles (25%, 50%, 75%), mean, std, etc.
+# Grouping it by the species column perfectly answers the third requirement.
+species_stats = df.groupby(cat_col).describe()
+
+# We transpose (.T) it just to make it fit nicer on the screen, but it's optional!
+print(species_stats.T)
