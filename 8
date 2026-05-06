@@ -1,0 +1,53 @@
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score
+
+# ---------------------------------------------------------
+# 1. Load the Dataset
+# ---------------------------------------------------------
+df = pd.read_csv("iris.csv")
+print("✅ Successfully loaded 'iris.csv'!\n")
+
+# Separate features (X) and the target species (y)
+# We assume the last column is the species, and everything else is the measurements
+X = df.iloc[:, :-1]
+y = df.iloc[:, -1]
+
+# Split into training (75%) and testing (25%) sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+
+# ---------------------------------------------------------
+# 2. Implement Simple Naïve Bayes Classification
+# ---------------------------------------------------------
+# We use Gaussian Naive Bayes because the Iris features are continuous (numeric)
+classifier = GaussianNB()
+classifier.fit(X_train, y_train)
+print("--- Model Training Complete ---\n")
+
+# Make predictions on the hidden test set
+y_pred = classifier.predict(X_test)
+
+# ---------------------------------------------------------
+# 3. Compute Confusion Matrix and Evaluation Metrics
+# ---------------------------------------------------------
+# Generate the Confusion Matrix
+cm = confusion_matrix(y_test, y_pred)
+
+print("--- Confusion Matrix ---")
+print(cm)
+print("\n(Note: Since there are 3 species, this is a 3x3 matrix. The diagonal numbers represent True Positives for each class.)\n")
+
+# Calculate Metrics
+# We use average='macro' because this is a multi-class dataset (3 flower types)
+accuracy = accuracy_score(y_test, y_pred)
+error_rate = 1 - accuracy
+precision = precision_score(y_test, y_pred, average='macro')
+recall = recall_score(y_test, y_pred, average='macro')
+
+print("--- Performance Metrics ---")
+print(f"Accuracy  : {accuracy:.4f}")
+print(f"Error Rate: {error_rate:.4f}")
+print(f"Precision : {precision:.4f}")
+print(f"Recall    : {recall:.4f}")
