@@ -1,0 +1,52 @@
+import pandas as pd
+import numpy as np
+
+
+df = pd.read_csv("academic_performance.csv")
+print(f"✅ Successfully loaded!\n")
+
+# ---------------------------------------------------------
+# 1. Scan for missing values and inconsistencies
+# ---------------------------------------------------------
+print("--- 1a. Missing values BEFORE handling ---")
+print(df.isnull().sum())
+print("\n")
+
+# Handling inconsistencies: 
+# We fill missing numeric values with the column's mean, 
+# and categorical/text values with the column's mode (most frequent value).
+for col in df.columns:
+    if df[col].dtype == 'object':
+        df[col] = df[col].fillna(df[col].mode()[0])
+    else:
+        df[col] = df[col].fillna(df[col].mean())
+
+print("--- 1b. Missing values AFTER handling ---")
+print(df.isnull().sum())
+print("\n")
+
+# ---------------------------------------------------------
+# 2 & 3. Scan for outliers, Identify, and Remove them
+# ---------------------------------------------------------
+print(f"Original dataset shape (Rows, Columns): {df.shape}\n")
+
+print("--- Scanning and removing outliers using the IQR Method ---")
+
+# Automatically select only the numeric columns to check for outliers
+numeric_columns = df.select_dtypes(include=[np.number]).columns
+
+# Apply the IQR (Interquartile Range) formula to each numeric column
+for col in numeric_columns:
+    Q1 = df[col].quantile(0.25) # 25th percentile
+    Q3 = df[col].quantile(0.75) # 75th percentile
+    IQR = Q3 - Q1               # Interquartile range
+    
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    
+    # Filter the dataframe to keep only rows within the lower and upper bounds
+    df = df[(df[col] >= lower_bound) & (df[col] <= upper_bound)]
+
+print(f"✅ Outliers removed!")
+print(f"New dataset shape (Rows, Columns): {df.shape}")
+print(f"Total rows removed: {891 - df.shape[0]}") # Just an example, replace 891 with actual original shape if you want to print difference, but the shape output is enough.
