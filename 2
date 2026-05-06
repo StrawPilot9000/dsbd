@@ -1,0 +1,46 @@
+import pandas as pd
+
+
+df = pd.read_csv("data.csv")
+print ("Data successfully loaded\n")
+
+
+print ("Dimensions of data frame")
+
+print (f"rows: {df.shape[0]}, columns: {df.shape[1]}\n")
+
+
+print ("variable description")
+df.info()
+print("\n")
+
+print ("initial statistics")
+print(df.describe(include='all'))
+print("\n")
+
+print("check missing values")
+print(df.isnull().sum())
+print("\n")
+# ---------------------------------------------------------
+# 4. Data Formatting and Normalization (Type Conversions)
+# ---------------------------------------------------------
+print("--- 4a. Summarizing Initial Data Types ---")
+print(df.dtypes)
+print("\n")
+
+print("--- 4b. Applying Proper Type Conversions ---")
+# 1. Convert 'object' (text/character) columns to 'category'
+text_columns = df.select_dtypes(include=['object']).columns
+for col in text_columns:
+    df[col] = df[col].astype('category')
+
+# 2. Convert standard 64-bit floats to 32-bit floats
+float_columns = df.select_dtypes(include=['float64']).columns
+for col in float_columns:
+    df[col] = df[col].astype('float32')
+
+print("✅ Data types AFTER conversion:")
+print(df.dtypes)
+
+
+
