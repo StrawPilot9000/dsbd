@@ -1,0 +1,70 @@
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+import warnings
+
+# Suppress the deprecation warning for distplot to keep output clean
+warnings.filterwarnings('ignore')
+
+# ---------------------------------------------------------
+# 1. Load the inbuilt Titanic dataset & Find Patterns
+# ---------------------------------------------------------
+# Seaborn has the Titanic dataset built directly into it
+df = sns.load_dataset('titanic')
+print("✅ Inbuilt Titanic dataset loaded successfully!\n")
+
+print("--- 1. Finding Patterns in the Data ---")
+# Pattern: Did your passenger class affect your chance of survival?
+plt.figure(figsize=(6, 4))
+sns.barplot(x='class', y='survived', data=df, palette='Set2')
+plt.title("Pattern Found: Survival Rate by Passenger Class")
+plt.ylabel("Survival Probability")
+plt.show()
+
+# ---------------------------------------------------------
+# 2. Visualizing the 'fare' column distribution
+# ---------------------------------------------------------
+print("--- 2. Generating Ticket Price ('fare') Visualizations ---")
+
+# For clean execution, we handle missing age values before plotting the jointplot
+df['age'] = df['age'].fillna(df['age'].mean())
+
+# 1. Histogram (using core Matplotlib)
+plt.figure(figsize=(6, 4))
+plt.hist(df['fare'], bins=30, color='skyblue', edgecolor='black')
+plt.title("1. Histogram of Ticket Fares")
+plt.xlabel("Fare")
+plt.ylabel("Frequency")
+plt.show()
+
+# 2. Distplot (Legacy Seaborn function requested by syllabus)
+plt.figure(figsize=(6, 4))
+sns.distplot(df['fare'], color='purple')
+plt.title("2. Distplot of Ticket Fares")
+plt.show()
+
+# 3. Histplot (Modern Seaborn function, with KDE line)
+plt.figure(figsize=(6, 4))
+sns.histplot(df['fare'], kde=True, color='green', bins=30)
+plt.title("3. Histplot of Ticket Fares")
+plt.show()
+
+# 4. Jointplot (Bivariate: Shows relationship between Age and Fare)
+# Note: jointplot creates its own figure automatically
+sns.jointplot(x='age', y='fare', data=df, kind='scatter', color='orange')
+plt.suptitle("4. Jointplot: Age vs Fare", y=1.02)
+plt.show()
+
+# 5. Rug Plot (Draws a small vertical tick at each observation)
+plt.figure(figsize=(6, 2))
+sns.rugplot(df['fare'], height=0.5, color='red')
+plt.title("5. Rug Plot of Ticket Fares")
+plt.xlabel("Fare")
+plt.yticks([]) # Hide y-axis since rugplot is 1-Dimensional
+plt.show()
+
+# 6. Barplot (Categorical vs Numeric: Average Fare per Class)
+plt.figure(figsize=(6, 4))
+sns.barplot(x='class', y='fare', data=df, palette='viridis')
+plt.title("6. Barplot: Average Fare by Passenger Class")
+plt.show()
