@@ -1,0 +1,72 @@
+
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+from nltk import pos_tag
+from sklearn.feature_extraction.text import TfidfVectorizer
+import pandas as pd
+
+# Download necessary NLTK datasets (runs silently)
+nltk.download('punkt', quiet=True)
+nltk.download('stopwords', quiet=True)
+nltk.download('wordnet', quiet=True)
+nltk.download('averaged_perceptron_tagger', quiet=True)
+
+# ---------------------------------------------------------
+# 1a. Create a Sample Document
+# ---------------------------------------------------------
+text = "Natural Language Processing is absolutely fascinating! It helps computers understand human language better. We are currently learning about tokenization, stemming, and lemmatization."
+print(f"--- Original Document ---\n{text}\n")
+
+# ---------------------------------------------------------
+# 1b. Document Preprocessing
+# ---------------------------------------------------------
+
+# Tokenization: Splitting the text into individual words
+tokens = word_tokenize(text)
+print(f"--- 1. Tokenization ---\n{tokens}\n")
+
+# Stop Words Removal: Removing common filler words (is, it, we, are)
+stop_words = set(stopwords.words('english'))
+filtered_tokens = [word for word in tokens if word.lower() not in stop_words and word.isalnum()]
+print(f"--- 2. Stop Words Removal ---\n{filtered_tokens}\n")
+
+# Stemming: Chopping off the ends of words to get the root
+stemmer = PorterStemmer()
+stemmed_words = [stemmer.stem(word) for word in filtered_tokens]
+print(f"--- 3. Stemming ---\n{stemmed_words}\n")
+
+# Lemmatization: Converting words to their meaningful dictionary root
+lemmatizer = WordNetLemmatizer()
+lemmatized_words = [lemmatizer.lemmatize(word) for word in filtered_tokens]
+print(f"--- 4. Lemmatization ---\n{lemmatized_words}\n")
+
+# POS Tagging (Part of Speech): Identifying nouns, verbs, adjectives, etc.
+# We do this on the original tokens to maintain grammatical context
+pos_tags = pos_tag(tokens)
+print(f"--- 5. POS Tagging ---\n{pos_tags}\n")
+
+# ---------------------------------------------------------
+# 2. Create TF-IDF Representation
+# ---------------------------------------------------------
+print("--- 6. TF-IDF Representation ---")
+
+# TF-IDF requires a 'corpus' (a list of documents/sentences). 
+# We will split our original text into 3 separate sentences to demonstrate this.
+corpus = [
+    "Natural Language Processing is absolutely fascinating!",
+    "It helps computers understand human language better.",
+    "We are currently learning about tokenization, stemming, and lemmatization."
+]
+
+# Initialize the Vectorizer and calculate TF-IDF
+vectorizer = TfidfVectorizer()
+tfidf_matrix = vectorizer.fit_transform(corpus)
+
+# Convert the mathematical matrix into a readable Pandas DataFrame
+feature_names = vectorizer.get_feature_names_out()
+df_tfidf = pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names)
+
+# Display the final matrix
+print(df_tfidf.T) # Transposed (.T) so the words read down the side nicely
