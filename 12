@@ -1,0 +1,56 @@
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+import warnings
+
+warnings.filterwarnings('ignore')
+
+# ---------------------------------------------------------
+# Load the Dataset
+# ---------------------------------------------------------
+df = pd.read_csv("iris.csv")
+print("✅ Successfully loaded 'iris.csv'!\n")
+
+# ---------------------------------------------------------
+# 1. List down the features and their types
+# ---------------------------------------------------------
+print("--- 1. Features and their Data Types ---")
+# This gives a clean list of columns and whether they are numeric (float/int) or nominal (object)
+print(df.dtypes)
+print("\nInference:")
+print("- The measurements (sepal_length, sepal_width, petal_length, petal_width) are Numeric (Continuous).")
+print("- The 'species' column is Nominal (Categorical).\n")
+
+# ---------------------------------------------------------
+# 2, 3 & 4. Histograms, Boxplots, and Subplot Demonstration
+# ---------------------------------------------------------
+print("--- Generating Subplots for Histograms and Boxplots ---")
+
+# Automatically grab only the numeric columns for plotting
+numeric_columns = df.select_dtypes(include=[np.number]).columns
+
+# Set up the subplot grid: 2 Rows (Top for Histograms, Bottom for Boxplots)
+# The number of columns dynamically matches the number of numeric features (usually 4 for Iris)
+fig, axes = plt.subplots(nrows=2, ncols=len(numeric_columns), figsize=(16, 8))
+
+# Loop through each numeric feature and draw the plots
+for i, col in enumerate(numeric_columns):
+    
+    # --- 2. Histogram (Top Row: index 0) ---
+    sns.histplot(df[col], kde=True, ax=axes[0, i], color='skyblue', edgecolor='black')
+    axes[0, i].set_title(f'Histogram of {col}')
+    axes[0, i].set_xlabel(col)
+    axes[0, i].set_ylabel('Frequency')
+    
+    # --- 3. Boxplot (Bottom Row: index 1) ---
+    sns.boxplot(y=df[col], ax=axes[1, i], color='lightgreen')
+    axes[1, i].set_title(f'Boxplot of {col}')
+    axes[1, i].set_ylabel(col)
+
+# --- 4. Subplot Formatting ---
+# tight_layout automatically adjusts spacing so titles and labels don't overlap
+plt.suptitle("Iris Dataset: Feature Distributions (Histograms & Boxplots)", fontsize=16, y=1.02)
+plt.tight_layout()
+plt.show()
