@@ -1,0 +1,40 @@
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# ---------------------------------------------------------
+# 1. Load the inbuilt Titanic dataset
+# ---------------------------------------------------------
+df = sns.load_dataset('titanic')
+print("✅ Inbuilt Titanic dataset loaded successfully!\n")
+
+# (Optional but recommended) Map the 0/1 survived column to text 
+# This makes the legend on the graph much easier to read!
+df['Survival_Status'] = df['survived'].map({0: 'Did Not Survive', 1: 'Survived'})
+
+print("--- Generating Visualizations ---")
+
+# ---------------------------------------------------------
+# 2. Set up the plotting area (1 row, 2 columns)
+# ---------------------------------------------------------
+plt.figure(figsize=(14, 6))
+
+# --- Plot 1: Box Plot ---
+# plt.subplot(nrows, ncols, index)
+plt.subplot(1, 2, 1) 
+sns.boxplot(x='sex', y='age', hue='Survival_Status', data=df, palette='pastel')
+plt.title("1. Box Plot: Age Distribution by Gender & Survival")
+plt.xlabel("Gender (Sex)")
+plt.ylabel("Age")
+
+# --- Plot 2: Violin Plot ---
+plt.subplot(1, 2, 2)
+# split=True merges the two survival categories into a single split violin
+sns.violinplot(x='sex', y='age', hue='Survival_Status', data=df, palette='muted', split=True)
+plt.title("2. Violin Plot: Age Distribution by Gender & Survival")
+plt.xlabel("Gender (Sex)")
+plt.ylabel("Age")
+
+# Display the plots neatly
+plt.tight_layout()
+plt.show()
