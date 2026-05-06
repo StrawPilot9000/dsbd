@@ -1,0 +1,34 @@
+import pandas as pd 
+import numpy as np
+
+
+df = pd.read_csv("titanic.csv")
+print ("dataset successfully loaded!\n")
+
+print ("Dimension of dataframe")
+print(f"Rows: {df.shape[0]}, columns: {df.shape[1]}\n")
+
+
+print ("variable descriptions and types")
+df.info()
+print("\n")
+
+
+print ("initial statistics")
+print(df.isnull().sum())
+print ("\n")
+
+print(df.describe(include='all')) 
+print("\n")
+
+
+print("--- 5. Data after automatic encoding ---")
+df_encoded = pd.get_dummies(df, drop_first=True)
+
+
+print(f"Original column count: {df.shape[1]}")
+print(f"New column count (after encoding): {df_encoded.shape[1]}\n")
+
+
+print("First 5 rows of the fully encoded dataset:")
+print(df_encoded.head())
