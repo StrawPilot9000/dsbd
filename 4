@@ -1,0 +1,50 @@
+
+import pandas as pd
+import numpy as np
+
+
+df = pd.read_csv("academic_performance.csv")
+print("✅ Successfully loaded 'academic_performance.csv'!\n")
+
+# ---------------------------------------------------------
+# 1. Scan for missing values and inconsistencies
+# ---------------------------------------------------------
+print("--- 1. Handling Missing Values ---")
+# Fill numeric missing values with mean, and text missing values with mode
+for col in df.columns:
+    if df[col].dtype == 'object':
+        df[col] = df[col].fillna(df[col].mode()[0])
+    else:
+        df[col] = df[col].fillna(df[col].mean())
+
+print("Missing values handled successfully.\n")
+
+# ---------------------------------------------------------
+# 2 & 3. Identify Skewness and Apply Data Transformation
+# ---------------------------------------------------------
+print("--- 2 & 3. Identifying and Recovering from Skewness ---")
+
+# Automatically select only the numeric columns to check for skewness
+numeric_columns = df.select_dtypes(include=[np.number]).columns
+
+# Identify initial skewness using Pandas .skew()
+print("Initial Skewness of numeric variables:")
+initial_skewness = df[numeric_columns].skew()
+print(initial_skewness)
+print("\n")
+
+# Apply Log Transformation to recover from skewness
+# A general rule of thumb is that skewness > 0.5 or < -0.5 is considered skewed.
+for col in numeric_columns:
+    if abs(initial_skewness[col]) > 0.5:
+        print(f"⚠️ Column '{col}' is skewed ({initial_skewness[col]:.2f}). Applying Log Transformation...")
+        
+        # We use np.log1p (log(1 + x)) instead of np.log to safely handle any zero values
+        # We also take the absolute value to prevent errors if there are negative numbers
+        df[col] = np.log1p(np.abs(df[col]))
+
+print("\n✅ Data Transformation Complete!")
+
+# Check the skewness again to see the improvement
+print("\nSkewness AFTER transformation:")
+print(df[numeric_columns].skew())
